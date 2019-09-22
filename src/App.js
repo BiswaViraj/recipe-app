@@ -1,26 +1,62 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import Recipe from "./Recipe";
+
+require("dotenv").config();
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [recipes, setRecipes] = useState([]);
+    const [search, setSearch] = useState("");
+    const [query, setQuery] = useState("chicken");
+
+    useEffect(() => {
+        const getRecipes = async () => {
+            const response = await fetch(
+                `https://api.edamam.com/search?q=${query}&app_id=${process.env.APP_ID}&app_key=${process.env.APP_KEY}`
+            );
+            const data = await response.json();
+            setRecipes(data.hits);
+            console.log(data.hits);
+        };
+        getRecipes();
+    }, [query]);
+
+    const updateSearch = e => {
+        setSearch(e.target.value);
+    };
+
+    const getSearch = e => {
+        e.preventDefault();
+        setQuery(search);
+        setSearch("");
+    };
+    return (
+        <div className="App">
+            <form className="search-form" onSubmit={getSearch}>
+                <input
+                    type="text"
+                    className="search-bar"
+                    value={search}
+                    placeholder="Search tasty recipes"
+                    onChange={updateSearch}
+                />
+                <button type="submit" className="search-button">
+                    Search
+                </button>
+            </form>
+            <div className="recipes">
+                {recipes.map(recipe => (
+                    <Recipe
+                        key={recipe.recipe.label}
+                        title={recipe.recipe.label}
+                        ingredients={recipe.recipe.ingredients}
+                        calorie={recipe.recipe.calories}
+                        image={recipe.recipe.image}
+                    />
+                ))}
+            </div>
+        </div>
+    );
 }
 
 export default App;
