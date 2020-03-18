@@ -3,7 +3,7 @@ import "./App.css";
 import Recipe from "./Recipe";
 
 require("dotenv").config();
-
+console.log(process.env.REACT_APP_ID);
 function App() {
     const [recipes, setRecipes] = useState([]);
     const [search, setSearch] = useState("");
@@ -12,7 +12,7 @@ function App() {
     useEffect(() => {
         const getRecipes = async () => {
             const response = await fetch(
-                `https://api.edamam.com/search?q=${query}&app_id=${process.env.APP_ID}&app_key=${process.env.APP_KEY}`
+                `https://api.edamam.com/search?q=${query}&app_id=${process.env.REACT_APP_ID}&app_key=${process.env.REACT_APP_KEY}`
             );
             const data = await response.json();
             setRecipes(data.hits);
